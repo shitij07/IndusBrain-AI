@@ -11,5 +11,6 @@ class DocumentResponse(BaseModel):
     mime_type: str
     uploaded_at: Optional[datetime] = None
     user_id: int
+    text_content: Optional[str] = None
 
     model_config = {"from_attributes": True}

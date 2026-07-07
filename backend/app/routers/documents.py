@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
 from app.config import get_settings
+from app.services.parser import extract_text
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 settings = get_settings()
@@ -90,6 +91,16 @@ def upload_file(
     db.add(doc)
     db.commit()
     db.refresh(doc)
+
+    try:
+        text = extract_text(file_path, doc.mime_type)
+        if text:
+            doc.text_content = text
+            db.commit()
+            db.refresh(doc)
+    except Exception:
+        pass
+
     return doc
 
 

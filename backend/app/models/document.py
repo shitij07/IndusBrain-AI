@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey, func
+from sqlalchemy import Column, Integer, String, BigInteger, DateTime, ForeignKey, Text, func
 from sqlalchemy.orm import relationship
 from app.database import Base
 
@@ -14,5 +14,6 @@ class Document(Base):
     file_path = Column(String(1000), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+    text_content = Column(Text, nullable=True)
 
     owner = relationship("User", backref="documents")

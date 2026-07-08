@@ -13,6 +13,18 @@ services:
     ports:
       - "5433:5432"
 
+  chromadb:
+    image: chromadb/chroma:0.6.3
+    restart: unless-stopped
+    environment:
+      IS_PERSISTENT: "TRUE"
+      PERSIST_DIRECTORY: /chroma/chroma_data
+      ANONYMIZED_TELEMETRY: "FALSE"
+    volumes:
+      - chroma_data:/chroma/chroma_data
+    ports:
+      - "8001:8000"
+
   backend:
     build: ./backend
     restart: unless-stopped
@@ -20,10 +32,14 @@ services:
       - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-indusbrain}:${POSTGRES_PASSWORD:-indusbrain}@db:5432/${POSTGRES_DB:-indusbrain}
+      CHROMA_PERSIST_DIR: /chroma_data
+    volumes:
+      - chroma_data:/chroma_data
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - chromadb
 
   frontend:
     build: ./frontend
@@ -37,3 +53,4 @@ services:
 
 volumes:
   pgdata:
+  chroma_data:

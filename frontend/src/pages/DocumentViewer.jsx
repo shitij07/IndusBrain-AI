@@ -45,7 +45,16 @@ export default function DocumentViewer() {
   useEffect(() => {
     api.get(`/documents/${id}`)
       .then(({ data }) => setDoc(data))
-      .catch(() => setError('Document not found'))
+      .catch((err) => {
+        const status = err.response?.status
+        if (status === 401 || status === 403) {
+          setError('Session expired. Please log in again.')
+        } else if (status === 404) {
+          setError('Document not found')
+        } else {
+          setError('Failed to load document.')
+        }
+      })
       .finally(() => setLoading(false))
   }, [id])
 
@@ -131,7 +140,7 @@ export default function DocumentViewer() {
         <div className="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mb-4">
           <AlertTriangle className="w-8 h-8 text-red-500" />
         </div>
-        <p className="text-lg font-semibold text-surface-900 mb-1">Document not found</p>
+        <p className="text-lg font-semibold text-surface-900 mb-1">Something went wrong</p>
         <p className="text-sm text-surface-400 mb-6">{error}</p>
         <Link to="/upload" className="btn-primary">
           <ArrowLeft className="w-4 h-4" />

@@ -38,6 +38,7 @@ services:
       NEO4J_PASSWORD: ${NEO4J_PASSWORD:-indusbrain}
     volumes:
       - chroma_data:/chroma_data
+      - upload_data:/app/uploads
     ports:
       - "8000:8000"
     depends_on:
@@ -70,4 +71,5 @@ services:
 volumes:
   pgdata:
   chroma_data:
+  upload_data:
   neo4j_data:

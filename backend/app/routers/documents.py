@@ -1,11 +1,11 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query, status
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_role
 from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
@@ -49,7 +49,7 @@ INLINE_MIME_TYPES = {
 def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
     if file.content_type not in ALLOWED_MIME_TYPES:
         raise HTTPException(
@@ -151,7 +151,6 @@ def list_documents(
 ):
     return (
         db.query(Document)
-        .filter(Document.user_id == current_user.id)
         .order_by(Document.uploaded_at.desc())
         .all()
     )
@@ -163,7 +162,7 @@ def get_document(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
     return doc
@@ -173,9 +172,9 @@ def get_document(
 def delete_document(
     document_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
@@ -209,7 +208,7 @@ def download_document(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
@@ -229,7 +228,7 @@ def view_document(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
 
@@ -250,7 +249,7 @@ def get_document_entities(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
     return db.query(ExtractedEntity).filter(ExtractedEntity.document_id == document_id).all()
@@ -261,14 +260,12 @@ def get_entities_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    docs = db.query(Document).filter(Document.user_id == current_user.id).all()
+    docs = db.query(Document).all()
     if not docs:
         return EntityGroupResponse(document_id=0, document_filename="", entities={})
 
     all_entities = (
         db.query(ExtractedEntity)
-        .join(Document)
-        .filter(Document.user_id == current_user.id)
         .order_by(ExtractedEntity.entity_type)
         .all()
     )
@@ -286,3 +283,237 @@ def get_entities_summary(
         document_filename=first_doc.original_filename,
         entities=grouped,
     )
+
+
+@router.get("/admin/all")
+def admin_list_all_documents(
+    user_id: int | None = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    q = db.query(Document)
+    if user_id:
+        q = q.filter(Document.user_id == user_id)
+    docs = q.order_by(Document.uploaded_at.desc()).all()
+    return [
+        {
+            "id": d.id,
+            "original_filename": d.original_filename,
+            "file_size": d.file_size,
+            "mime_type": d.mime_type,
+            "uploaded_at": d.uploaded_at.isoformat() if d.uploaded_at else None,
+            "user_id": d.user_id,
+            "owner_name": d.owner.full_name if d.owner else None,
+            "owner_email": d.owner.email if d.owner else None,
+        }
+        for d in docs
+    ]
+
+
+@router.delete("/admin/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def admin_delete_document(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    if os.path.exists(doc.file_path):
+        os.remove(doc.file_path)
+
+    try:
+        delete_document_chunks(doc.id)
+    except Exception:
+        pass
+
+    db.query(ExtractedEntity).filter(ExtractedEntity.document_id == doc.id).delete()
+    try:
+        from app.services.graph_service import _get_driver, cleanup_orphans
+        report_id = f"report_{doc.id}"
+        driver = _get_driver()
+        if driver:
+            with driver.session() as session:
+                session.run("MATCH (r:Report {id: $rid}) DETACH DELETE r", {"rid": report_id})
+            cleanup_orphans()
+    except Exception:
+        pass
+
+    db.delete(doc)
+    db.commit()
+
+
+@router.post("/reprocess/{document_id}")
+def reprocess_document(
+    document_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    if not os.path.exists(doc.file_path):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found on disk")
+
+    try:
+        delete_document_chunks(doc.id)
+    except Exception:
+        pass
+
+    db.query(ExtractedEntity).filter(ExtractedEntity.document_id == doc.id).delete()
+    try:
+        from app.services.graph_service import _get_driver, cleanup_orphans
+        report_id = f"report_{doc.id}"
+        driver = _get_driver()
+        if driver:
+            with driver.session() as session:
+                session.run("MATCH (r:Report {id: $rid}) DETACH DELETE r", {"rid": report_id})
+            cleanup_orphans()
+    except Exception:
+        pass
+
+    try:
+        text = extract_text(doc.file_path, doc.mime_type)
+        if text:
+            doc.text_content = text
+            db.commit()
+
+            try:
+                index_document(
+                    document_id=doc.id,
+                    text=text,
+                    metadata={
+                        "original_filename": doc.original_filename,
+                        "mime_type": doc.mime_type,
+                        "user_id": doc.user_id,
+                    },
+                )
+            except Exception:
+                pass
+
+            try:
+                entities = extract_entities_from_text(text)
+                for ent in entities:
+                    db.add(ExtractedEntity(
+                        document_id=doc.id,
+                        entity_type=ent.get("type", ""),
+                        entity_value=ent.get("value", ""),
+                        page_number=ent.get("page"),
+                        confidence=ent.get("confidence"),
+                    ))
+                db.commit()
+
+                if entities:
+                    build_graph_from_entities(doc.id, doc.original_filename, entities)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    return {"message": "Document reprocessed successfully", "document_id": doc.id}
+
+
+@router.post("/replace/{document_id}", response_model=DocumentResponse)
+def replace_document(
+    document_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+
+    if file.content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File type '{file.content_type}' is not allowed",
+        )
+
+    if os.path.exists(doc.file_path):
+        os.remove(doc.file_path)
+
+    try:
+        delete_document_chunks(doc.id)
+    except Exception:
+        pass
+
+    db.query(ExtractedEntity).filter(ExtractedEntity.document_id == doc.id).delete()
+    try:
+        from app.services.graph_service import _get_driver, cleanup_orphans
+        report_id = f"report_{doc.id}"
+        driver = _get_driver()
+        if driver:
+            with driver.session() as session:
+                session.run("MATCH (r:Report {id: $rid}) DETACH DELETE r", {"rid": report_id})
+            cleanup_orphans()
+    except Exception:
+        pass
+
+    ext = os.path.splitext(file.filename)[1] if file.filename else ""
+    stored_name = f"{uuid.uuid4().hex}{ext}"
+    now = datetime.now(timezone.utc)
+    upload_dir = os.path.join(
+        settings.UPLOAD_DIR,
+        str(doc.user_id),
+        str(now.year),
+        f"{now.month:02d}",
+        f"{now.day:02d}",
+    )
+    os.makedirs(upload_dir, exist_ok=True)
+    new_path = os.path.join(upload_dir, stored_name)
+
+    file_size = 0
+    with open(new_path, "wb") as f:
+        while chunk := file.file.read(1024 * 1024):
+            file_size += len(chunk)
+            f.write(chunk)
+
+    doc.original_filename = file.filename or stored_name
+    doc.stored_filename = stored_name
+    doc.file_size = file_size
+    doc.mime_type = file.content_type or "application/octet-stream"
+    doc.file_path = new_path
+    db.commit()
+    db.refresh(doc)
+
+    try:
+        text = extract_text(doc.file_path, doc.mime_type)
+        if text:
+            doc.text_content = text
+            db.commit()
+
+            try:
+                index_document(
+                    document_id=doc.id,
+                    text=text,
+                    metadata={
+                        "original_filename": doc.original_filename,
+                        "mime_type": doc.mime_type,
+                        "user_id": doc.user_id,
+                    },
+                )
+            except Exception:
+                pass
+
+            try:
+                entities = extract_entities_from_text(text)
+                for ent in entities:
+                    db.add(ExtractedEntity(
+                        document_id=doc.id,
+                        entity_type=ent.get("type", ""),
+                        entity_value=ent.get("value", ""),
+                        page_number=ent.get("page"),
+                        confidence=ent.get("confidence"),
+                    ))
+                db.commit()
+                if entities:
+                    build_graph_from_entities(doc.id, doc.original_filename, entities)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    return doc

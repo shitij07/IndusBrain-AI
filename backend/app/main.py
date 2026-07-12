@@ -2,16 +2,38 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 from app.config import get_settings
-from app.database import engine, Base
+from app.database import engine, Base, SessionLocal
+from app.models.user import User
+from app.dependencies import hash_password
 from app.routers import health, auth, documents, chat, graph, rca, compliance, search
 
 settings = get_settings()
+
+def _seed_admin():
+    db = SessionLocal()
+    try:
+        admin = db.query(User).filter(User.role == "admin").first()
+        if not admin:
+            admin = User(
+                email=settings.ADMIN_EMAIL,
+                full_name=settings.ADMIN_NAME,
+                password_hash=hash_password(settings.ADMIN_PASSWORD),
+                role="admin",
+            )
+            db.add(admin)
+            db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    _seed_admin()
     yield
 
 app = FastAPI(title="IndusBrain AI", version="1.0.0", lifespan=lifespan)

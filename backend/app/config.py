@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     NEO4J_URI: str = "bolt://localhost:7687"
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "indusbrain"
+    ADMIN_EMAIL: str = "admin@indusbrain.com"
+    ADMIN_PASSWORD: str = "admin123"
+    ADMIN_NAME: str = "Admin"
 
     class Config:
         env_file = _find_env_file()

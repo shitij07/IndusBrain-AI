@@ -23,7 +23,7 @@ def get_document_graph(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    doc = db.query(Document).filter(Document.id == document_id, Document.user_id == current_user.id).first()
+    doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
     data = get_graph_by_document(document_id)

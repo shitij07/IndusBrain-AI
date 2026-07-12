@@ -61,7 +61,7 @@ const mimeBadge = {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [docs, setDocs] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -102,10 +102,12 @@ export default function Dashboard() {
           </h1>
           <p className="text-sm text-surface-400 dark:text-surface-500 mt-1">Here&apos;s what&apos;s happening today.</p>
         </div>
-        <Link to="/upload" className="btn-primary hidden sm:flex">
-          <Upload className="w-4 h-4" />
-          Upload Document
-        </Link>
+        {isAdmin && (
+          <Link to="/upload" className="btn-primary hidden sm:flex">
+            <Upload className="w-4 h-4" />
+            Upload Document
+          </Link>
+        )}
       </motion.div>
 
       {/* Stats */}
@@ -164,13 +166,13 @@ export default function Dashboard() {
             <EmptyState
               icon={FileText}
               title="No documents yet"
-              description="Upload your first document to get started with AI-powered analysis."
-              action={
+              description={isAdmin ? "Upload your first document to get started with AI-powered analysis." : "No documents available. Ask questions in AI Chat or use the Knowledge Graph to explore data."}
+              action={isAdmin ? (
                 <Link to="/upload" className="btn-primary text-sm">
                   <Upload className="w-4 h-4" />
                   Upload Document
                 </Link>
-              }
+              ) : undefined}
             />
           ) : (
             <div className="space-y-2">

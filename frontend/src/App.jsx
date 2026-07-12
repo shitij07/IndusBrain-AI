@@ -12,6 +12,8 @@ import About from './pages/About'
 import KnowledgeGraph from './pages/KnowledgeGraph'
 import ComplianceChecker from './pages/ComplianceChecker'
 import Search from './pages/Search'
+import AdminDocuments from './pages/AdminDocuments'
+import AccessDenied from './pages/AccessDenied'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 
@@ -59,10 +61,26 @@ export default function App() {
       <Route
         path="/upload"
         element={
-          <ProtectedLayout>
-            <Upload />
-          </ProtectedLayout>
+          <ProtectedRoute adminOnly>
+            <Layout>
+              <Upload />
+            </Layout>
+          </ProtectedRoute>
         }
+      />
+      <Route
+        path="/admin/documents"
+        element={
+          <ProtectedRoute adminOnly>
+            <Layout>
+              <AdminDocuments />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/access-denied"
+        element={<AccessDenied />}
       />
       <Route
         path="/chat"

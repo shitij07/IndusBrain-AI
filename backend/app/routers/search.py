@@ -25,9 +25,8 @@ def _api_key() -> str:
     return key
 
 
-def _search_documents(query: str, user_id: int, db) -> list[dict]:
+def _search_documents(query: str, db) -> list[dict]:
     results = db.query(Document).filter(
-        Document.user_id == user_id,
         Document.text_content.ilike(f"%{query}%"),
     ).order_by(Document.uploaded_at.desc()).limit(10).all()
 
@@ -165,11 +164,10 @@ def _search_failures(query: str, db) -> list[dict]:
     return results
 
 
-def _search_sops(query: str, user_id: int, db) -> list[dict]:
+def _search_sops(query: str, db) -> list[dict]:
     results = []
 
     sops = db.query(Document).filter(
-        Document.user_id == user_id,
         Document.original_filename.ilike(f"%sop%"),
         Document.text_content.ilike(f"%{query}%"),
     ).limit(10).all()
@@ -277,11 +275,11 @@ def global_search(
 ):
     query = q.strip()
 
-    documents = _search_documents(query, current_user.id, db)
+    documents = _search_documents(query, db)
     equipment = _search_equipment(query, db)
     reports = _search_reports(query, db)
     failures = _search_failures(query, db)
-    sops = _search_sops(query, current_user.id, db)
+    sops = _search_sops(query, db)
 
     results = {
         "documents": documents,

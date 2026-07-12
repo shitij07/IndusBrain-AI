@@ -27,7 +27,6 @@ def chat(
         results = query_similar(
             query=request.question,
             top_k=5,
-            where={"user_id": current_user.id},
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")

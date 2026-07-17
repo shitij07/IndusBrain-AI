@@ -5,3 +5,6 @@ __pycache__/
 .env
 *.egg-info/
 .venv/
+backend/venv/
+backend/uploads/
+sample_docs/

@@ -1,0 +1,27 @@
+INCIDENT REPORT
+Report ID: IR-2026-002
+Date: February 20, 2026
+Operator: S. Patel
+Asset ID: AST-0043
+Equipment: Compressor C-201
+Plant: Plant A
+Location: Compressor Bay
+Failure Type: Bearing failure
+
+DESCRIPTION
+At 09:15 hours, operator S. Patel reported unusual grinding noise from Compressor C-201 (AST-0043). Vibration readings showed elevated levels at the drive-end bearing (12.4 mm/s vs normal 3.0 mm/s). Unit was shut down immediately.
+
+ROOT CAUSE
+Lubrication failure due to clogged oil feed line. The oil analysis showed metal particles indicating bearing raceway degradation.
+
+CORRECTIVE ACTION
+1. Replaced both drive-end and non-drive-end bearings (SKF 6310).
+2. Flushed oil system and replaced oil filter.
+3. Verified oil feed line is clear.
+4. Restarted compressor at 17:30 hours - vibration readings at 2.8 mm/s (normal).
+
+DOWNTIME: 8 hours
+
+RECOMMENDATIONS
+1. Implement monthly oil analysis for Compressor C-201.
+2. Replace oil filter every 3 months instead of current 6-month schedule.

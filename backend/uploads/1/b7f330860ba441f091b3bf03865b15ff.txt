@@ -1,0 +1,29 @@
+INCIDENT REPORT
+Report ID: IR-2026-003
+Date: 10 March 2026
+Operator: R. Kumar
+Asset ID: AST-0042
+Equipment: Pump P-102 - Motor
+Plant: Plant A
+Location: Section 3
+Failure Type: Motor overheating
+
+DESCRIPTION
+At 11:00 hours, motor temperature alarm triggered for Pump P-102 motor. Winding temperature measured at 145°C (normal operating range: 70-90°C). Pump was tripped automatically by the thermal overload protection.
+
+ROOT CAUSE
+Blocked discharge line caused pump to operate at near-zero flow condition, resulting in rapid heat buildup in the motor. The blockage was traced to debris (scale deposits) in the discharge pipe following recent pipeline maintenance work.
+
+CORRECTIVE ACTION
+1. Isolated pump and locked out power supply.
+2. Removed debris from discharge line (scale buildup approximately 2 kg).
+3. Inspected motor windings - no visible damage, megger test passed at 200 MΩ.
+4. Serviced motor bearings and applied grease.
+5. Restarted pump at 17:00 hours - temperature stabilized at 82°C.
+
+DOWNTIME: 6 hours
+
+RECOMMENDATIONS
+1. Install Y-strainer on pump discharge line.
+2. Add post-maintenance flush procedure to pipeline maintenance SOPs.
+3. Monitor motor temperature closely for next 30 days.

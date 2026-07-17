@@ -1,0 +1,32 @@
+MAINTENANCE LOG
+Log ID: ML-P102-20260401
+Date: 2026-04-01
+Technician: R. Kumar
+Asset ID: AST-0042
+Equipment: Pump P-102
+Plant: Plant A
+Location: Section 3
+Manufacturer: Grundfos
+Model: CR-45-3
+Meter Reading: 8,760 operating hours
+
+MAINTENANCE TYPE: Scheduled Preventive Maintenance (12-month)
+
+TASKS PERFORMED:
+1. Lubricated motor bearings (grease type: SKF LGMT 3)
+2. Replaced mechanical seal (preventive - 12-month interval)
+3. Checked and tightened coupling alignment (within 0.05 mm tolerance)
+4. Replaced oil in bearing housing (ISO VG 68)
+5. Inspected pressure gauges - PT-402 reading accurate within +/- 0.5%
+6. Megger test: 250 MΩ (acceptable: >100 MΩ)
+7. Vibration measurement: 2.5 mm/s (acceptable: <5.0 mm/s)
+8. Checked suction and discharge pressure within normal range
+9. Updated equipment tag with new seal installation date
+
+PARTS USED:
+- Mechanical seal kit: Grundfos CR-45-3-SEAL (Qty: 1)
+- Bearing grease: SKF LGMT 3 (Qty: 0.5 kg)
+- Bearing housing oil: ISO VG 68 (Qty: 2 L)
+- Gasket set: Pump-P102-GSK (Qty: 1)
+
+NEXT SCHEDULED MAINTENANCE: 2026-10-01 (6-month interval)

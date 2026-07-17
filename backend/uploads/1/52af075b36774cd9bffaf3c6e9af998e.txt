@@ -1,0 +1,30 @@
+INCIDENT REPORT
+Report ID: IR-2026-001
+Date: 15 January 2026
+Operator: R. Kumar
+Asset ID: AST-0042
+Equipment: Pump P-102
+Plant: Plant A
+Location: Section 3
+Failure Type: Seal leakage
+
+DESCRIPTION
+At approximately 14:30 hours, operator R. Kumar noticed excessive fluid leakage from the seal housing of Pump P-102 (AST-0042). The leakage rate was estimated at 30-40 drops per minute, significantly exceeding the acceptable weepage rate of 1-2 drops/min.
+
+The pump was immediately shut down following SOP-4205 Section 5.0.
+
+ROOT CAUSE ANALYSIS
+Upon inspection, the mechanical seal was found to be worn. The seal ring had developed a groove on the stationary face, likely due to normal wear after approximately 18 months of continuous operation.
+
+CORRECTIVE ACTION
+1. Pump P-102 was isolated and lockout/tagout applied.
+2. Mechanical seal replaced with genuine Grundfos seal kit (Part No: CR-45-3-SEAL).
+3. Shaft inspected for scoring - no damage found.
+4. Seal housing cleaned and reassembled.
+5. Pump restarted at 18:30 hours - leakage rate verified at 1 drop/min (acceptable).
+
+DOWNTIME: 4 hours
+
+RECOMMENDATIONS
+1. Schedule seal replacement every 12 months as proactive maintenance.
+2. Update SOP-4205 to include monthly seal weepage inspection.

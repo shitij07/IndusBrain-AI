@@ -1,0 +1,28 @@
+INCIDENT REPORT
+Report ID: IR-2026-006
+Date: June 01, 2026
+Operator: T. Nair
+Asset ID: AST-0101
+Equipment: Pressure Transmitter PT-402
+Plant: Plant A
+Location: Rack A12
+Failure Type: Instrument drift
+
+DESCRIPTION
+During routine calibration of Pressure Transmitter PT-402 (AST-0101), it was found that the zero offset had drifted by +0.03 bar. While still within acceptable tolerance (0.05 bar max), the drift trend across the last three calibrations shows a consistent increase.
+
+DETAILS
+- Calibration Date: 2026-06-01
+- Previous Cal: 2026-03-15 (zero offset: +0.02 bar)
+- Cal Before That: 2025-12-01 (zero offset: +0.01 bar)
+- Drift Rate: Approximately +0.003 bar/month
+
+CORRECTIVE ACTION
+1. Zero offset adjusted to 0.00 bar.
+2. Transmitter remains in service - within all specifications.
+3. Drift trend noted in equipment history for monitoring.
+
+RECOMMENDATIONS
+1. Increase calibration frequency to 3-month intervals (from 6-month).
+2. Plan replacement of PT-402 during next scheduled turnaround if drift rate continues.
+3. Investigate whether ambient temperature fluctuations at Rack A12 location are contributing to drift.

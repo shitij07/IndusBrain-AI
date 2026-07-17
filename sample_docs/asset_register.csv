@@ -1,0 +1,7 @@
+Asset ID,Equipment Name,Category,Plant,Location,Status,Criticality,Last Maintenance Date,Technician,Manufacturer,Model,Commission Year
+AST-0042,Pump P-102,Pump,Plant A,Section 3,Active,High,2025-12-15,R. Kumar,Grundfos,CR-45-3,2019
+AST-0043,Compressor C-201,Compressor,Plant A,Compressor Bay,Active,Critical,2026-01-10,S. Patel,Siemens,7SJ64,2018
+AST-0055,Cooling Fan CF-101,Fan,Plant B,Roof,Active,Medium,2026-02-01,A. Singh,ABB,AC-500,2020
+AST-0099,Conveyor Belt CB-001,Conveyor,Plant B,Bay 2,Active,Medium,2026-03-01,P. Verma,Flexco,FC-2000,2017
+AST-0101,Pressure Transmitter PT-402,Instrument,Plant A,Rack A12,Active,High,2026-04-01,T. Nair,Emerson,3051S,2021
+AST-0102,Motor M-201,Motor,Plant A,Motor Room,Inactive,Medium,2025-08-01,K. Joshi,ABB,M2BAX,2016

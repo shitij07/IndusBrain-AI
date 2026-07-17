@@ -1,0 +1,51 @@
+STANDARD OPERATING PROCEDURE
+SOP Number: SOP-4205
+Title: Pump P-102 Startup and Shutdown
+Plant: Plant A
+Location: Section 3
+Asset ID: AST-0042
+Equipment: Pump P-102
+Manufacturer: Grundfos
+Model: CR-45-3
+Category: Pump
+Criticality: High
+Status: Active
+
+1.0 PURPOSE
+This procedure describes the safe startup and shutdown of Pump P-102.
+
+2.0 SCOPE
+Applies to all operators working with Pump P-102 (AST-0042) in Plant A, Section 3.
+
+3.0 PREREQUISITES
+3.1 Verify pump isolation valve is closed.
+3.2 Ensure suction line is fully primed.
+3.3 Check lubrication oil level in bearing housing.
+3.4 Verify coupling alignment between motor and pump shaft.
+3.5 Confirm all pressure gauges (PT-402) are reading within normal range.
+
+4.0 STARTUP PROCEDURE
+4.1 Open suction valve fully.
+4.2 Start the motor and immediately check for unusual vibrations or noise.
+4.3 Gradually open the discharge valve while monitoring discharge pressure.
+4.4 Verify flow rate is within 45-55 m³/h.
+4.5 Check seal housing for any leakage. Slight weepage (1-2 drops/min) is acceptable.
+4.6 Log all startup parameters in the maintenance log.
+
+5.0 SHUTDOWN PROCEDURE
+5.1 Close discharge valve gradually.
+5.2 Stop the motor.
+5.3 Close suction valve.
+5.4 If shutting down for maintenance, isolate and lockout/tagout the pump.
+5.5 Depressurize the system by cracking the drain valve.
+
+6.0 REFERENCES
+- Equipment Manual: Pump P-102 (Grundfos CR-45-3)
+- Safety Guideline: SG-4021 - Pump Maintenance Safety
+- Calibration Certificate: PT-402 (Pressure Transmitter)
+- Maintenance Log: ML-P102-2026
+
+7.0 REVISION HISTORY
+Rev 1.0: Initial release - Jan 2024
+Rev 1.1: Updated startup parameters - Jun 2025
+Rev 2.0: Added seal leakage inspection criteria - Jan 2026

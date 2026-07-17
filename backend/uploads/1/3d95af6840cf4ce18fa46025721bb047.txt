@@ -1,0 +1,28 @@
+INCIDENT REPORT
+Report ID: IR-2026-004
+Date: 05 April 2026
+Operator: A. Singh
+Asset ID: AST-0055
+Equipment: Cooling Fan CF-101
+Plant: Plant B
+Location: Roof
+Failure Type: Fan blade fracture
+
+DESCRIPTION
+At approximately 03:00 hours, a loud bang was heard from the roof area. Cooling Fan CF-101 (AST-0055) was found to have one of its six fan blades completely fractured at the root. The fan was vibrating severely and was immediately stopped.
+
+ROOT CAUSE
+Material fatigue after 18 months of continuous operation. Metallurgical analysis of the fractured blade showed crack initiation at a weld point on the blade root. The fan had been running 24/7 since installation in October 2024.
+
+CORRECTIVE ACTION
+1. Replaced entire fan assembly with upgraded unit (ABB AC-500-Series 2).
+2. Installed vibration monitoring sensor on the new fan.
+3. Verified balance of new fan assembly.
+4. Updated maintenance schedule to include quarterly blade inspections.
+
+DOWNTIME: 3 hours
+
+RECOMMENDATIONS
+1. Install vibration monitoring on all roof fans.
+2. Replace fan assemblies after 15,000 operating hours as proactive measure.
+3. Consider intermittent fan operation to reduce continuous stress.

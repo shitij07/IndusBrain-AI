@@ -1,0 +1,25 @@
+INCIDENT REPORT
+Report ID: IR-2026-007
+Date: 2026-06-15
+Operator: R. Kumar
+Asset ID: AST-0042
+Equipment: Pump P-102
+Plant: Plant A
+Location: Section 3
+Failure Type: Seal leakage
+
+DESCRIPTION
+Operator R. Kumar detected fluid leakage from Pump P-102 seal housing for the third time this year. Leakage rate approximately 20 drops/min. Seal was replaced just 5 months ago during the January incident.
+
+ROOT CAUSE
+Shaft sleeve has developed a groove from the previous seal running surface, causing premature seal wear. The shaft sleeve was not inspected/replaced during the January 2026 seal replacement.
+
+CORRECTIVE ACTION
+1. Replaced shaft sleeve.
+2. Installed new mechanical seal.
+3. Verified shaft runout within spec (0.03 mm max).
+4. Pump restarted successfully.
+
+RECOMMENDATIONS
+1. Always inspect shaft sleeve when replacing mechanical seals on Pump P-102.
+2. Add shaft sleeve inspection to SOP-4205 seal replacement procedure.

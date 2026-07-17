@@ -1,0 +1,7 @@
+Failure ID,Date,Asset ID,Equipment,Failure Type,Root Cause,Downtime,Corrective Action,Technician,Status,Related SOP
+F-001,2026-01-15,AST-0042,Pump P-102,Seal leakage,Worn seal ring,4h,Replaced seal ring,R. Kumar,Resolved,SOP-4205
+F-002,2026-02-20,AST-0043,Compressor C-201,Bearing failure,Lubrication failure,8h,Replaced bearings and flushed oil system,S. Patel,Resolved,SOP-3102
+F-003,2026-03-10,AST-0042,Pump P-102,Motor overheating,Overload due to blocked discharge,6h,Cleared blockage and serviced motor,R. Kumar,Resolved,SOP-4205
+F-004,2026-04-05,AST-0055,Cooling Fan CF-101,Fan blade fracture,Material fatigue after 18 months continuous operation,3h,Replaced fan assembly,A. Singh,Resolved,SOP-5501
+F-005,2026-05-12,AST-0099,Conveyor Belt CB-001,Belt misalignment,Worn idler pulley bearing,5h,Replaced idler pulley and realigned belt,P. Verma,Resolved,SOP-6702
+F-006,2026-06-20,AST-0042,Pump P-102,Seal leakage,Worn seal ring (premature failure - replaced 5 months ago),4h,Replaced seal ring and inspected shaft for scoring,R. Kumar,Open,SOP-4205

@@ -1,0 +1,28 @@
+INCIDENT REPORT
+Report ID: IR-2026-005
+Date: 12 May 2026
+Operator: P. Verma
+Asset ID: AST-0099
+Equipment: Conveyor Belt CB-001
+Plant: Plant B
+Location: Bay 2
+Failure Type: Belt misalignment
+
+DESCRIPTION
+At 08:30 hours, conveyor belt CB-001 (AST-0099) was found tracking to the left by approximately 50 mm. The belt was rubbing against the support frame, causing edge damage. Production line was stopped.
+
+ROOT CAUSE
+Worn idler pulley bearing on the return side allowed the pulley to tilt, causing the belt to drift.
+
+CORRECTIVE ACTION
+1. Replaced worn idler pulley bearing (SKF 6205).
+2. Realigned belt tracking using adjustment bolts on the tail pulley.
+3. Verified tracking by running belt empty for 30 minutes.
+4. Inspected all other idler pulleys - one additional bearing showed early wear and was replaced proactively.
+
+DOWNTIME: 5 hours
+
+RECOMMENDATIONS
+1. Implement monthly idler pulley inspection for all conveyors.
+2. Add belt tracking check to daily startup checklist.
+3. Replace all idler bearings at 5-year intervals.

@@ -1,0 +1,51 @@
+SAFETY GUIDELINE
+Document ID: SG-4021
+Title: Pump Maintenance Safety
+Plant: Plant A
+Area: Section 3
+Applicable Equipment: Pump P-102 (AST-0042), Pump P-103 (AST-0044)
+Issue Date: 2025-03-01
+Status: Active
+
+1.0 HAZARDS IDENTIFIED
+1.1 Rotating machinery entanglement
+1.2 High-pressure fluid injection injury (25 bar max)
+1.3 Hot surface burns (motor casing up to 90°C)
+1.4 Electrical shock (15 kW motor, 415 V 3-phase)
+1.5 Chemical exposure (if handling process fluids)
+1.6 Heavy lifting (pump assembly 185 kg)
+
+2.0 REQUIRED PPE
+- Safety glasses with side shields
+- Steel-toed boots
+- Hearing protection (if noise > 85 dB)
+- Cut-resistant gloves for seal handling
+- Arc flash PPE for electrical work
+- Fall protection if working at height on pump platform
+
+3.0 LOCKOUT/TAGOUT PROCEDURE
+3.1 Notify all affected personnel.
+3.2 Identify all energy sources: electrical (motor disconnect), mechanical (stored pressure).
+3.3 Shut down pump following SOP-4205 Section 5.0.
+3.4 Lock and tag the motor disconnect switch.
+3.5 Verify zero energy: attempt to start pump, bleed pressure at drain valve.
+3.6 Confirm pressure gauge reads 0 bar before proceeding.
+
+4.0 SPECIFIC SAFEGUARDS FOR SEAL REPLACEMENT
+4.1 Ensure pump is fully depressurized before opening seal housing.
+4.2 Seal housing may contain pressurized fluid even when pump is off - use caution.
+4.3 Use proper seal installation tool to avoid damaging seal faces.
+4.4 Wear cut-resistant gloves when handling used seals (may have sharp edges).
+4.5 Contain and dispose of any leaked process fluid per environmental guidelines.
+
+5.0 EMERGENCY RESPONSE
+5.1 Major fluid leak: Evacuate area, call emergency response.
+5.2 Electrical shock: Cut power, call first aid.
+5.3 Fire: Use Class C extinguisher on electrical fires.
+5.4 Injury: Report to shift supervisor immediately.
+
+6.0 TRAINING REQUIREMENTS
+All personnel working on Pump P-102 must complete:
+- Pump Maintenance Safety Training (annual)
+- Lockout/Tagout Certification (annual)
+- SOP-4205 Familiarization (upon initial assignment)

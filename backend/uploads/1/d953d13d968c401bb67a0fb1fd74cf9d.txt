@@ -1,0 +1,52 @@
+EQUIPMENT MANUAL
+Title: Pump P-102 Operating and Maintenance Manual
+Asset ID: AST-0042
+Equipment: Pump P-102
+Manufacturer: Grundfos
+Model: CR-45-3
+Category: Pump
+Plant: Plant A
+Commission Year: 2019
+
+1.0 GENERAL DESCRIPTION
+The Grundfos CR-45-3 is a vertical multistage centrifugal pump designed for high-pressure water and light industrial fluid applications.
+
+2.0 TECHNICAL SPECIFICATIONS
+- Flow Rate: 45 m³/h at 50 Hz
+- Max Operating Pressure: 25 bar
+- Motor Power: 15 kW
+- Motor Speed: 2900 RPM
+- Inlet/Outlet: DN80 / DN65
+- Materials: Stainless steel impellers and chamber
+- Weight: 185 kg
+
+3.0 INSTALLATION
+3.1 Foundation must be level within 0.5 mm/m.
+3.2 Allow minimum 500 mm clearance on all sides for maintenance access.
+3.3 Install isolation valves on both suction and discharge sides.
+3.4 Ensure piping is supported independently to avoid stress on pump nozzles.
+3.5 Connect pressure gauge at discharge (range: 0-30 bar).
+
+4.0 OPERATION
+4.1 Do not run pump dry.
+4.2 Minimum flow rate: 5 m³/h.
+4.3 Maximum ambient temperature: 50°C.
+4.4 Maximum fluid temperature: 120°C.
+4.5 Run pump at lowest possible NPSH margin.
+
+5.0 MAINTENANCE SCHEDULE
+- Daily: Check for leaks, unusual noise, vibration
+- Weekly: Verify pressure and flow readings, log readings
+- Monthly: Inspect seal weepage, check oil level
+- 6-Month: Change bearing oil, inspect coupling
+- 12-Month: Replace mechanical seal, inspect bearings, meg test motor
+- 5-Year: Major overhaul - replace all bearings and seals
+
+6.0 TROUBLESHOOTING
+- Low Flow: Check suction strainer, verify valve position
+- High Vibration: Check coupling alignment, bearing condition
+- Seal Leakage: Replace mechanical seal, check shaft runout
+- Motor Overheating: Check flow rate, verify cooling fan, clean motor fins
+
+7.0 CONTACT
+Grundfos Technical Support: +1-800-555-0199

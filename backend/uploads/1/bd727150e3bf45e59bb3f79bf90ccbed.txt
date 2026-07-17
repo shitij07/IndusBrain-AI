@@ -1,0 +1,44 @@
+CALIBRATION CERTIFICATE
+Certificate ID: CAL-2026-001
+Date: 2026-03-15
+Technician: T. Nair
+Asset ID: AST-0101
+Equipment: Pressure Transmitter PT-402
+Manufacturer: Emerson
+Model: 3051S
+Plant: Plant A
+Location: Rack A12, Section 3
+Criticality: High
+Next Calibration Due: 2026-09-15
+
+CALIBRATION STANDARDS
+- Reference Standard: Digital Pressure Controller DPC-500 (NIST traceable, Cal ID: REF-2025-012)
+- Ambient Temperature: 22°C +/- 1°C
+- Ambient Humidity: 45% RH
+
+AS-FOUND RESULTS:
+Point (bar) | Applied (bar) | Reading (bar) | Error (%) | Pass/Fail
+0.0         | 0.00          | 0.02          | N/A        | Pass
+5.0         | 5.00          | 5.03          | 0.60%      | Pass
+10.0        | 10.00         | 10.05         | 0.50%      | Pass
+15.0        | 15.00         | 15.08         | 0.53%      | Pass
+20.0        | 20.00         | 20.10         | 0.50%      | Pass
+25.0        | 25.00         | 25.12         | 0.48%      | Pass
+
+ADJUSTMENT: Zero offset adjusted (was 0.02 bar at zero)
+
+AS-LEFT RESULTS:
+Point (bar) | Applied (bar) | Reading (bar) | Error (%) | Pass/Fail
+0.0         | 0.00          | 0.00          | N/A        | Pass
+5.0         | 5.00          | 5.01          | 0.20%      | Pass
+10.0        | 10.00         | 10.01         | 0.10%      | Pass
+15.0        | 15.00         | 15.02         | 0.13%      | Pass
+20.0        | 20.00         | 20.01         | 0.05%      | Pass
+25.0        | 25.00         | 25.02         | 0.08%      | Pass
+
+CERTIFICATION
+I certify that the above instrument was calibrated in accordance with ISO 10012:2003 and manufacturer specifications. The reference standards are traceable to NIST.
+
+Technician: T. Nair (ID: TN-4021)
+Date: 2026-03-15
+Supervisor: M. Gupta

@@ -91,12 +91,12 @@ export default function KnowledgeGraph() {
   const [nodes, setNodes, onNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [selectedNode, setSelectedNode] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loadingGraph, setLoadingGraph] = useState(false)
   const [error, setError] = useState(null)
   const reactFlowRef = useRef(null)
 
-  const fetchGraph = useCallback(async () => {
-    setLoading(true)
+  const loadGraph = useCallback(async () => {
+    setLoadingGraph(true)
     setError(null)
     try {
       const { data } = await api.get('/graph')
@@ -105,7 +105,7 @@ export default function KnowledgeGraph() {
         type: 'knowledge',
         data: {
           id: n.id,
-          label: n.label,
+          label: n.label || (n.labels && n.labels[0]) || 'Unknown',
           name: n.name,
           onSelect: () => {},
         },
@@ -115,10 +115,7 @@ export default function KnowledgeGraph() {
         source: e.source,
         target: e.target,
         animated: true,
-        style: {
-          stroke: '#6366f1',
-          strokeWidth: 1.5,
-        },
+        style: { stroke: '#6366f1', strokeWidth: 1.5 },
         label: e.label,
       }))
 
@@ -131,26 +128,24 @@ export default function KnowledgeGraph() {
         setEdges(apiEdges)
       }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to load knowledge graph')
+      setError(err.response?.data?.detail || 'Failed to load graph')
+      setNodes([])
+      setEdges([])
     } finally {
-      setLoading(false)
+      setLoadingGraph(false)
     }
   }, [setNodes, setEdges])
 
   useEffect(() => {
-    fetchGraph()
-  }, [fetchGraph])
+    loadGraph()
+  }, [loadGraph])
 
   const onNodeClick = useCallback(
-    (_, node) => {
-      setSelectedNode(node.data)
-    },
+    (_, node) => setSelectedNode(node.data),
     [],
   )
 
-  const onSelect = useCallback((data) => {
-    setSelectedNode(data)
-  }, [])
+  const onSelect = useCallback((data) => setSelectedNode(data), [])
 
   const nodesWithHandler = useMemo(
     () =>
@@ -171,94 +166,88 @@ export default function KnowledgeGraph() {
     [],
   )
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
-        <div className="flex flex-col items-center gap-3 text-surface-400 dark:text-surface-500">
-          <Loader2 className="w-8 h-8 animate-spin" />
-          <p className="text-sm">Loading knowledge graph...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
-        <div className="card p-8 text-center max-w-md">
-          <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-3" />
-          <p className="text-sm font-medium text-surface-900 dark:text-surface-100 mb-1">Unable to load graph</p>
-          <p className="text-xs text-surface-400 dark:text-surface-500 mb-4">{error}</p>
-          <button onClick={fetchGraph} className="btn-primary text-xs">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Retry
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (nodes.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
-        <div className="card p-8 text-center max-w-md">
-          <Share2 className="w-10 h-10 text-surface-300 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-surface-900 dark:text-surface-100 mb-1">No knowledge graph yet</p>
-          <p className="text-xs text-surface-400 dark:text-surface-500 leading-relaxed">
-            Upload documents to automatically build a knowledge graph of equipment, failures, operators, and more.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="h-[calc(100vh-10rem)] relative">
-      <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-1.5">
-        {legend.map((item) => {
-          const Icon = item.icon
-          return (
-            <div
-              key={item.key}
-              className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-surface-600 dark:text-surface-300"
+      {loadingGraph ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="flex flex-col items-center gap-3 text-surface-400 dark:text-surface-500">
+            <Loader2 className="w-8 h-8 animate-spin" />
+            <p className="text-sm">Loading graph...</p>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="card p-8 text-center max-w-md">
+            <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-3" />
+            <p className="text-sm font-medium text-surface-900 dark:text-surface-100 mb-1">Unable to load graph</p>
+            <p className="text-xs text-surface-400 dark:text-surface-500 mb-4">{error}</p>
+            <button onClick={() => loadGraph()} className="btn-primary text-xs">
+              <RefreshCw className="w-3.5 h-3.5" />
+              Retry
+            </button>
+          </div>
+        </div>
+      ) : nodes.length === 0 ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="card p-8 text-center max-w-md">
+            <Share2 className="w-10 h-10 text-surface-300 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-surface-900 dark:text-surface-100 mb-1">
+              No knowledge graph yet
+            </p>
+            <p className="text-xs text-surface-400 dark:text-surface-500 leading-relaxed">
+              Upload documents to automatically build a knowledge graph.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="relative h-full">
+          <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-1.5">
+            {legend.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.key}
+                  className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-surface-600 dark:text-surface-300"
+                >
+                  <Icon className="w-3 h-3" />
+                  {item.label}
+                </div>
+              )
+            })}
+            <button
+              onClick={() => loadGraph()}
+              className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors"
+              title="Refresh graph"
             >
-              <Icon className="w-3 h-3" />
-              {item.label}
-            </div>
-          )
-        })}
-        <button
-          onClick={fetchGraph}
-          className="glass flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors ml-1"
-          title="Refresh graph"
-        >
-          <RefreshCw className="w-3 h-3" />
-          Refresh
-        </button>
-      </div>
+              <RefreshCw className="w-3 h-3" />
+              Refresh
+            </button>
+          </div>
 
-      <ReactFlow
-        ref={reactFlowRef}
-        nodes={nodesWithHandler}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onNodeClick={onNodeClick}
-        nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.25 }}
-        minZoom={0.3}
-        maxZoom={2}
-        className="rounded-2xl"
-      >
-        <Background color="#e2e8f0" gap={20} size={1} />
-        <Controls className="!rounded-xl !border-surface-200 !shadow-sm" />
-        <MiniMap
-          className="!rounded-xl !border-surface-200 !shadow-sm"
-          nodeColor={(n) => nodeVisuals[n.data?.label]?.color || '#6366f1'}
-          maskColor="rgba(0,0,0,0.08)"
-        />
-      </ReactFlow>
+          <ReactFlow
+            ref={reactFlowRef}
+            nodes={nodesWithHandler}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            fitView
+            fitViewOptions={{ padding: 0.25 }}
+            minZoom={0.3}
+            maxZoom={2}
+            className="rounded-2xl"
+          >
+            <Background color="#e2e8f0" gap={20} size={1} />
+            <Controls className="!rounded-xl !border-surface-200 !shadow-sm" />
+            <MiniMap
+              className="!rounded-xl !border-surface-200 !shadow-sm"
+              nodeColor={(n) => nodeVisuals[n.data?.label]?.color || '#6366f1'}
+              maskColor="rgba(0,0,0,0.08)"
+            />
+          </ReactFlow>
+        </div>
+      )}
 
       {selectedNode && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 backdrop-blur-sm">

@@ -84,9 +84,9 @@ function ResultCard({ item, category }) {
           <p className="text-xs text-surface-400 dark:text-surface-500 mt-0.5">From: {item.document_filename}</p>
         )}
         <div className="flex items-center gap-2 mt-1.5">
-          {item.document_id && (
+          {(item.document_id || item.id) && (
             <Link
-              to={`/view/${item.document_id}`}
+              to={`/view/${item.document_id || item.id}`}
               className="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline"
             >
               <ExternalLink className="w-3 h-3" />

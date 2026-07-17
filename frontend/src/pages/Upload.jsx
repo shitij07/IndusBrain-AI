@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import api from '../api/client'
 import EmptyState from '../components/EmptyState'
+import { useAuth } from '../context/AuthContext'
 
 const ACCEPTED = '.pdf,.docx,.xlsx,.xls,.png,.jpg,.jpeg,.gif,.webp,.bmp,.tiff'
 
@@ -65,6 +66,7 @@ const badgeColor = {
 }
 
 export default function Upload() {
+  const { isAdmin } = useAuth()
   const inputRef = useRef(null)
   const [dragging, setDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -167,90 +169,89 @@ export default function Upload() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Upload Documents</h1>
-        <p className="text-sm text-surface-400 dark:text-surface-500 mt-1">Drag and drop or click to browse your files.</p>
+        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Documents</h1>
+        <p className="text-sm text-surface-400 dark:text-surface-500 mt-1">Browse all uploaded documents.</p>
       </motion.div>
 
-      {/* Drop zone */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div
-          onDragOver={onDragOver}
-          onDragLeave={onDragLeave}
-          onDrop={onDrop}
-          onClick={() => inputRef.current?.click()}
-          className={`relative overflow-hidden rounded-2xl border-2 border-dashed p-12 text-center cursor-pointer transition-all duration-300 ${
-            dragging
-              ? 'border-brand-500 dark:border-brand-400 bg-brand-50/50 dark:bg-brand-900/20 scale-[1.01]'
-              : 'border-surface-300 dark:border-surface-600 bg-white dark:bg-surface-800 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-surface-50/50 dark:hover:bg-surface-700/50'
-          }`}
+      {/* Drop zone — admin only */}
+      {isAdmin && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
         >
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept={ACCEPTED}
-            onChange={onInputChange}
-            className="hidden"
-          />
+          <div
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            onClick={() => inputRef.current?.click()}
+            className={`relative overflow-hidden rounded-2xl border-2 border-dashed p-12 text-center cursor-pointer transition-all duration-300 ${
+              dragging
+                ? 'border-brand-500 dark:border-brand-400 bg-brand-50/50 dark:bg-brand-900/20 scale-[1.01]'
+                : 'border-surface-300 dark:border-surface-600 bg-white dark:bg-surface-800 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-surface-50/50 dark:hover:bg-surface-700/50'
+            }`}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept={ACCEPTED}
+              onChange={onInputChange}
+              className="hidden"
+            />
 
-          <AnimatePresence mode="wait">
-            {dragging ? (
-              <motion.div
-                key="dragging"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                className="space-y-3"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mx-auto">
-                  <UploadIcon className="w-8 h-8 text-brand-600 dark:text-brand-400" />
-                </div>
-                <p className="text-lg font-semibold text-brand-600 dark:text-brand-400">Drop files here</p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="idle"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                className="space-y-3"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-700/50 flex items-center justify-center mx-auto group-hover:bg-brand-50 dark:group-hover:bg-brand-900/30 transition-colors">
-                  <UploadIcon className="w-8 h-8 text-surface-400 dark:text-surface-500" strokeWidth={1.5} />
-                </div>
-                <p className="text-base font-medium text-surface-700 dark:text-surface-200">
-                  Drag & drop files here, or <span className="text-brand-600 dark:text-brand-400">browse</span>
-                </p>
-                <p className="text-sm text-surface-400 dark:text-surface-500">
-                  PDF &middot; DOCX &middot; Excel &middot; Images
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+            <AnimatePresence mode="wait">
+              {dragging ? (
+                <motion.div
+                  key="dragging"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="space-y-3"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mx-auto">
+                    <UploadIcon className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+                  </div>
+                  <p className="text-lg font-semibold text-brand-600 dark:text-brand-400">Drop files here</p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="idle"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="space-y-3"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-700/50 flex items-center justify-center mx-auto group-hover:bg-brand-50 dark:group-hover:bg-brand-900/30 transition-colors">
+                    <UploadIcon className="w-8 h-8 text-surface-400 dark:text-surface-500" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-base font-medium text-surface-700 dark:text-surface-200">
+                    Drag & drop files here, or <span className="text-brand-600 dark:text-brand-400">browse</span>
+                  </p>
+                  <p className="text-sm text-surface-400 dark:text-surface-500">
+                    PDF &middot; DOCX &middot; Excel &middot; Images
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
 
       {/* Error */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-800/30 text-sm text-red-600 dark:text-red-400 font-medium"
-          >
-            <AlertCircle className="w-4 h-4" />
-            {error}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isAdmin && error && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-800/30 text-sm text-red-600 dark:text-red-400 font-medium"
+        >
+          <AlertCircle className="w-4 h-4" />
+          {error}
+        </motion.div>
+      )}
 
-      {/* Upload queue */}
-      <AnimatePresence>
+      {/* Upload queue — admin only */}
+      {isAdmin && <AnimatePresence>
         {fileQueue.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -306,7 +307,7 @@ export default function Upload() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>}
 
       {/* Document list */}
       <motion.div
@@ -385,13 +386,15 @@ export default function Upload() {
                           >
                             <Download className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => deleteDoc(doc.id)}
-                            className="btn-ghost p-2 text-red-400 dark:text-red-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => deleteDoc(doc.id)}
+                              className="btn-ghost p-2 text-red-400 dark:text-red-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </motion.tr>

@@ -19,6 +19,12 @@ ENTITY_TYPES = [
     "SOP Number",
     "Failure Type",
     "Maintenance Date",
+    "Manufacturer",
+    "Model",
+    "Category",
+    "Location",
+    "Criticality",
+    "Status",
 ]
 
 EXTRACTION_PROMPT = """You are an industrial document analyst. Extract the following entities from the given document text and return them as a JSON array of objects.
@@ -33,6 +39,12 @@ Entity types to extract:
 - SOP Number (e.g., SOP-1023, WI-0042, MNT-STD-005)
 - Failure Type (e.g., Seal leakage, Bearing failure, Motor overheating, Corrosion)
 - Maintenance Date (e.g., 20 June 2026, 2026-06-20, 06/20/2026)
+- Manufacturer (e.g., Grundfos, Siemens, ABB, Emerson)
+- Model (e.g., CR-45-3, 7SJ64, XRS-200)
+- Category (e.g., Pump, Compressor, Valve, Motor, Transformer, Conveyor)
+- Location (e.g., Section 3, Bay 2, Rack A12, North Wall)
+- Criticality (e.g., High, Medium, Low, Critical)
+- Status (e.g., Active, Inactive, Under maintenance, Decommissioned)
 
 For each entity found, provide:
 - "type": the entity type (exactly as listed above)

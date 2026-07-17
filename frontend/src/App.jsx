@@ -59,13 +59,11 @@ export default function App() {
         }
       />
       <Route
-        path="/upload"
+        path="/documents"
         element={
-          <ProtectedRoute adminOnly>
-            <Layout>
-              <Upload />
-            </Layout>
-          </ProtectedRoute>
+          <ProtectedLayout>
+            <Upload />
+          </ProtectedLayout>
         }
       />
       <Route

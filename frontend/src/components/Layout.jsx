@@ -23,6 +23,7 @@ import { useTheme } from '../context/ThemeContext'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/documents', label: 'Documents', icon: Upload },
   { to: '/search', label: 'Search', icon: Search },
   { to: '/chat', label: 'AI Chat', icon: MessageSquareText },
   { to: '/knowledge-graph', label: 'Knowledge Graph', icon: Share2 },
@@ -31,7 +32,6 @@ const navItems = [
 
 const adminItems = [
   { to: '/admin', label: 'Admin', icon: ShieldCheck },
-  { to: '/upload', label: 'Upload', icon: Upload },
   { to: '/admin/documents', label: 'All Documents', icon: ClipboardCheck },
 ]
 

@@ -1,3 +1,4 @@
+import json
 import os
 import uuid
 from datetime import datetime, timezone
@@ -14,6 +15,20 @@ from app.services.parser import extract_text
 from app.services.chroma_service import index_document, delete_document_chunks
 from app.services.entity_extractor import extract_entities_from_text
 from app.services.graph_service import build_graph_from_entities, get_graph_by_document
+from app.services.asset_resolver import (
+    resolve_entities_to_claims,
+    get_canonical_asset,
+    parse_asset_register_csv,
+    ingest_asset_register_rows,
+    recreate_report_for_document,
+)
+from app.services.dedup_service import (
+    check_duplicate,
+    compute_content_hash,
+    compute_minhash_signature,
+    create_duplicate_of_edge,
+)
+from app.services.event_linking_service import link_document_to_failures, ingest_failure_history_csv
 from app.models.entity import ExtractedEntity
 from app.schemas.entity import EntityResponse, EntityGroupResponse
 
@@ -32,6 +47,8 @@ ALLOWED_MIME_TYPES = {
     "image/webp",
     "image/bmp",
     "image/tiff",
+    "text/csv",
+    "application/csv",
 }
 
 INLINE_MIME_TYPES = {
@@ -104,6 +121,45 @@ def upload_file(
             db.commit()
             db.refresh(doc)
 
+        if not text:
+            return doc
+
+        content_hash = compute_content_hash(text)
+        doc.content_hash = content_hash
+        db.commit()
+
+        duplicate_target, match_type, match_confidence = None, None, None
+        try:
+            result = check_duplicate(db, text, exclude_document_id=doc.id)
+            if result[0] is not None:
+                duplicate_target = result[0]
+                match_type = result[1]
+                match_confidence = result[2]
+        except Exception:
+            pass
+
+        if duplicate_target is not None:
+            doc.duplicate_of_id = duplicate_target.id
+            db.commit()
+
+            try:
+                create_duplicate_of_edge(
+                    existing_document_id=duplicate_target.id,
+                    new_document_id=doc.id,
+                    match_type=match_type or "exact",
+                    confidence=match_confidence or 1.0,
+                )
+            except Exception:
+                pass
+
+            return doc
+
+        try:
+            doc.minhash_signature = json.dumps(compute_minhash_signature(text))
+            db.commit()
+        except Exception:
+            pass
+
         if text:
             try:
                 num_chunks = index_document(
@@ -138,10 +194,75 @@ def upload_file(
                 build_graph_from_entities(doc.id, doc.original_filename, entities)
             except Exception:
                 pass
+
+        if doc.mime_type in ("text/csv", "application/csv"):
+            try:
+                rows = parse_asset_register_csv(text)
+                if rows:
+                    ingest_asset_register_rows(rows)
+            except Exception:
+                pass
+
+        try:
+            _resolve_asset_claims_for_document(doc.id, doc.original_filename, entities)
+        except Exception:
+            pass
+
+        try:
+            if text and doc.mime_type in ("text/csv", "application/csv"):
+                fe_count = ingest_failure_history_csv(text)
+                if fe_count > 0:
+                    _link_document_to_failures(doc.id, doc.original_filename, text, entities)
+        except Exception:
+            pass
+
+        try:
+            if text and entities:
+                has_failure_signal = any(e.get("type") in (
+                    "Failure Type", "Asset ID", "Equipment", "Maintenance Date"
+                ) for e in entities)
+                if has_failure_signal:
+                    _link_document_to_failures(doc.id, doc.original_filename, text, entities)
+        except Exception:
+            pass
     except Exception:
         pass
 
     return doc
+
+
+def _resolve_asset_claims_for_document(document_id: int, filename: str, entities: list[dict] | None):
+    if not entities:
+        return
+
+    asset_id_ents = [e for e in entities if e.get("type") == "Asset ID" and e.get("value", "").strip()]
+    if not asset_id_ents:
+        return
+
+    recreate_report_for_document(document_id, filename)
+
+    for ae in asset_id_ents:
+        aid = ae["value"].strip()
+        canonical = get_canonical_asset(aid)
+        if not canonical:
+            continue
+        resolve_entities_to_claims(
+            asset_id=aid,
+            entities=entities,
+            document_id=document_id,
+            document_filename=filename,
+            document_type="Document",
+        )
+
+
+def _link_document_to_failures(document_id: int, filename: str, text: str, entities: list[dict] | None):
+    recreate_report_for_document(document_id, filename)
+    link_document_to_failures(
+        document_id=document_id,
+        filename=filename,
+        text=text,
+        entities=entities,
+    )
 
 
 @router.get("", response_model=list[DocumentResponse])
@@ -407,6 +528,8 @@ def reprocess_document(
 
                 if entities:
                     build_graph_from_entities(doc.id, doc.original_filename, entities)
+
+                _resolve_asset_claims_for_document(doc.id, doc.original_filename, entities)
             except Exception:
                 pass
     except Exception:
@@ -511,6 +634,8 @@ def replace_document(
                 db.commit()
                 if entities:
                     build_graph_from_entities(doc.id, doc.original_filename, entities)
+
+                _resolve_asset_claims_for_document(doc.id, doc.original_filename, entities)
             except Exception:
                 pass
     except Exception:

@@ -15,5 +15,8 @@ class Document(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
     text_content = Column(Text, nullable=True)
+    content_hash = Column(String(64), nullable=True, index=True)
+    minhash_signature = Column(Text, nullable=True)
+    duplicate_of_id = Column(Integer, nullable=True)
 
     owner = relationship("User", backref="documents")

@@ -7,6 +7,7 @@ TEXT_DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml
 TEXT_DOC_MIME = "application/msword"
 TEXT_XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 TEXT_XLS_MIME = "application/vnd.ms-excel"
+TEXT_CSV_MIMES = {"text/csv", "application/csv", "text/plain"}
 
 SCANNED_PDF_MIN_CHARS = 20
 
@@ -20,7 +21,21 @@ def extract_text(file_path: str, mime_type: str) -> str | None:
         return _extract_xlsx(file_path)
     if mime_type and mime_type.startswith("image/"):
         return _extract_image(file_path)
+    if mime_type in TEXT_CSV_MIMES:
+        return _extract_csv(file_path)
     return None
+
+
+def _extract_csv(file_path: str) -> str | None:
+    try:
+        with open(file_path, "r", encoding="utf-8-sig") as f:
+            return f.read()
+    except Exception:
+        try:
+            with open(file_path, "r", encoding="latin-1") as f:
+                return f.read()
+        except Exception:
+            return None
 
 
 def _extract_pdf(file_path: str) -> str | None:

@@ -7,7 +7,7 @@ from app.config import get_settings
 from app.database import engine, Base, SessionLocal
 from app.models.user import User
 from app.dependencies import hash_password
-from app.routers import health, auth, documents, chat, graph, rca, compliance, search
+from app.routers import health, auth, documents, chat, graph, rca, compliance, search, assets, event_linking
 
 settings = get_settings()
 
@@ -54,3 +54,5 @@ app.include_router(graph.router)
 app.include_router(rca.router)
 app.include_router(compliance.router)
 app.include_router(search.router)
+app.include_router(assets.router)
+app.include_router(event_linking.router)

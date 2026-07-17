@@ -142,7 +142,7 @@ export default function DocumentViewer() {
         </div>
         <p className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Something went wrong</p>
         <p className="text-sm text-surface-400 dark:text-surface-500 mb-6">{error}</p>
-        <Link to="/upload" className="btn-primary">
+        <Link to="/documents" className="btn-primary">
           <ArrowLeft className="w-4 h-4" />
           Back to Documents
         </Link>
@@ -163,7 +163,7 @@ export default function DocumentViewer() {
       >
         <div>
           <Link
-            to="/upload"
+            to="/documents"
             className="inline-flex items-center gap-1.5 text-sm text-surface-400 dark:text-surface-500 hover:text-surface-600 transition-colors mb-2"
           >
             <ArrowLeft className="w-4 h-4" />

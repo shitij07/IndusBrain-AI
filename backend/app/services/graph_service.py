@@ -252,22 +252,40 @@ def get_full_graph() -> dict:
 
     try:
         with driver.session() as session:
-            nodes_result = session.run(
-                "MATCH (n) RETURN n.id AS id, labels(n) AS labels, n.name AS name, n.type AS type, n.filename AS filename, n.date AS date, n.asset_id AS asset_id"
-            )
+            nodes_result = session.run("""
+                MATCH (n)
+                RETURN n.id AS id, n.asset_id AS asset_id,
+                       labels(n) AS labels,
+                       n.name AS name, n.canonical_name AS canonical_name,
+                       n.type AS type, n.filename AS filename, n.date AS date,
+                       n.attribute AS attribute, n.value AS value
+            """)
             nodes = []
             for r in nodes_result:
                 d = r.data()
                 label = d["labels"][0] if d.get("labels") else ""
+                node_id = d.get("id") or d.get("asset_id") or ""
+                node_name = (
+                    d.get("canonical_name") or d.get("name") or
+                    d.get("filename") or d.get("type") or
+                    d.get("date") or d.get("attribute") or
+                    d.get("value") or node_id
+                )
+                if label == "AssetClaim":
+                    conflict = d.get("value", "")
+                    node_name = f"{d.get('attribute', '?')}: {d.get('value', '?')}"
                 nodes.append({
-                    "id": d["id"],
+                    "id": node_id,
                     "label": label,
-                    "name": d.get("name") or d.get("filename") or d.get("type") or d.get("date") or d["id"],
+                    "name": node_name,
                 })
 
-            edges_result = session.run(
-                "MATCH (a)-[r]->(b) RETURN a.id AS source, b.id AS target, type(r) AS label"
-            )
+            edges_result = session.run("""
+                MATCH (a)-[r]->(b)
+                RETURN coalesce(a.id, a.asset_id) AS source,
+                       coalesce(b.id, b.asset_id) AS target,
+                       type(r) AS label
+            """)
             edges = [r.data() for r in edges_result]
 
         return {"nodes": nodes, "edges": edges}
@@ -331,6 +349,14 @@ def get_graph_by_document(document_id: int) -> dict:
                        type(rel) AS rel_type
             """, {"rid": report_id})
 
+            claim_result = session.run("""
+                MATCH (r:Report {id: $rid})-[:MAKES_CLAIM]->(c:AssetClaim)
+                OPTIONAL MATCH (c)<-[:HAS_CLAIM]-(a:Asset)
+                RETURN c.id AS cid, c.attribute AS cattr, c.value AS cval,
+                       c.conflicts_with_canonical AS cconflict,
+                       a.asset_id AS aid, a.canonical_name AS aname
+            """, {"rid": report_id})
+
             for rec in eq_result:
                 rd = rec.data()
                 if rd.get("eid") and rd["eid"] not in seen_ids:
@@ -354,6 +380,37 @@ def get_graph_by_document(document_id: int) -> dict:
                         "source": rd["eid"],
                         "target": rd["nid"],
                         "label": rd["rel_type"],
+                    })
+
+            for rec in claim_result:
+                rd = rec.data()
+                if rd.get("aid") and rd["aid"] not in seen_ids:
+                    seen_ids.add(rd["aid"])
+                    nodes.append({
+                        "id": rd["aid"],
+                        "label": "Asset",
+                        "name": rd.get("aname") or rd["aid"],
+                    })
+                if rd.get("cid") and rd["cid"] not in seen_ids:
+                    seen_ids.add(rd["cid"])
+                    conflict_flag = rd.get("cconflict", False)
+                    display = f"{rd.get('cattr', '?')}: {rd.get('cval', '?')}"
+                    if conflict_flag:
+                        display += " ⚠"
+                    nodes.append({
+                        "id": rd["cid"],
+                        "label": "AssetClaim",
+                        "name": display,
+                    })
+                    edges.append({
+                        "source": rd["cid"],
+                        "target": rd["aid"],
+                        "label": "ABOUT",
+                    })
+                    edges.append({
+                        "source": report_id,
+                        "target": rd["cid"],
+                        "label": "MAKES_CLAIM",
                     })
 
         return {"nodes": nodes, "edges": edges}

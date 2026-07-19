@@ -225,9 +225,9 @@ export default function Search() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Global Search</h1>
+        <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Asset Search</h1>
         <p className="text-sm text-surface-400 dark:text-surface-500 mt-1">
-          Search across documents, equipment, reports, failures, and SOPs
+          Search across asset documents, equipment, inspection reports, failures, and SOPs
         </p>
       </div>
 
@@ -263,14 +263,14 @@ export default function Search() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card p-4 bg-gradient-to-r from-brand-500/5 to-violet-500/5 dark:from-brand-500/10 dark:to-violet-500/10 border-brand-200/50 dark:border-brand-800/40"
+          className="bg-white dark:bg-surface-800 rounded-lg border border-amber-200/50 dark:border-amber-800/30 shadow-sm p-4"
         >
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-4 h-4 text-surface-950" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-1">AI Summary</p>
+              <p className="data-label mb-1">AI Summary</p>
               <p className="text-sm text-surface-700 dark:text-surface-200 leading-relaxed">{results.ai_summary}</p>
             </div>
           </div>
@@ -315,9 +315,9 @@ export default function Search() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center mb-5 shadow-lg shadow-brand-500/20"
+            className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center mb-5 shadow-lg shadow-amber-500/20"
           >
-            <SearchIcon className="w-8 h-8 text-white" />
+            <SearchIcon className="w-7 h-7 text-surface-950" />
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
@@ -346,9 +346,9 @@ export default function Search() {
               <button
                 key={s}
                 onClick={() => handleSuggestion(s)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:border-amber-400/30 hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-all"
               >
-                <Sparkles className="w-3.5 h-3.5 text-brand-400" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                 {s}
               </button>
             ))}

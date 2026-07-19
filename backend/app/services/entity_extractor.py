@@ -1,11 +1,8 @@
 import json
-import os
 import re
-from typing import Optional
-
-import google.generativeai as genai
 
 from app.config import get_settings
+from app.services.gemini_client import get_gemini_client
 
 settings = get_settings()
 
@@ -62,27 +59,16 @@ Document text:
 {text}"""
 
 
-def _api_key() -> str:
-    key = settings.GEMINI_API_KEY or os.getenv("GOOGLE_API_KEY") or ""
-    return key
-
-
 def extract_entities_from_text(text: str) -> list[dict]:
     if not text or not text.strip():
         return []
 
-    key = _api_key()
-    if not key:
-        return []
-
-    genai.configure(api_key=key)
-    model = genai.GenerativeModel(settings.GEMINI_CHAT_MODEL)
+    client = get_gemini_client()
 
     prompt = EXTRACTION_PROMPT.format(text=text[:30000])
 
     try:
-        response = model.generate_content(prompt)
-        raw = response.text.strip()
+        raw = client.generate_content(prompt)
         raw = re.sub(r"^```(?:json)?\s*", "", raw)
         raw = re.sub(r"\s*```$", "", raw)
         entities = json.loads(raw)

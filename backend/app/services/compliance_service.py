@@ -1,20 +1,10 @@
 import json
-import os
 import re
-import uuid
-from typing import Optional
-
-import google.generativeai as genai
 
 from app.config import get_settings
-from app.services.parser import extract_text
+from app.services.gemini_client import get_gemini_client
 
 settings = get_settings()
-
-
-def _api_key() -> str:
-    key = settings.GEMINI_API_KEY or os.getenv("GOOGLE_API_KEY") or ""
-    return key
 
 
 COMPLIANCE_PROMPT = """You are a compliance auditing expert for industrial maintenance operations. You will compare a Standard Operating Procedure (SOP) against an Inspection Report and identify compliance gaps.
@@ -52,23 +42,14 @@ def check_compliance(sop_text: str, report_text: str) -> dict:
     if not report_text or not report_text.strip():
         raise ValueError("Inspection Report text is empty")
 
-    key = _api_key()
-    if not key:
-        raise ValueError(
-            "Gemini API key not configured. "
-            "Set GEMINI_API_KEY in .env or export GOOGLE_API_KEY."
-        )
-    genai.configure(api_key=key)
+    client = get_gemini_client()
 
     prompt = COMPLIANCE_PROMPT.format(
         sop_text=sop_text[:40000],
         report_text=report_text[:40000],
     )
 
-    model = genai.GenerativeModel(settings.GEMINI_CHAT_MODEL)
-    response = model.generate_content(prompt)
-
-    raw = response.text.strip()
+    raw = client.generate_content(prompt)
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
 

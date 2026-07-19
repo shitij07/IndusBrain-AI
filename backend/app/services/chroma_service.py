@@ -5,9 +5,9 @@ from typing import Optional
 
 import chromadb
 from chromadb.config import Settings as ChromaSettings
-import google.generativeai as genai
 
 from app.config import get_settings
+from app.services.gemini_client import get_gemini_client, GeminiClientError
 
 settings = get_settings()
 
@@ -28,21 +28,15 @@ def _get_collection():
     )
 
 
-def _api_key() -> str:
-    key = settings.GEMINI_API_KEY or os.getenv("GOOGLE_API_KEY") or ""
-    return key
-
-
 def _generate_embedding(text: str) -> list[float]:
-    key = _api_key()
-    if not key:
+    client = get_gemini_client()
+    try:
+        return client.embed_content(text)
+    except GeminiClientError:
         raise ValueError(
             "Gemini API key not configured. "
-            "Set GEMINI_API_KEY in .env or export GOOGLE_API_KEY."
+            "Set GEMINI_API_KEY or GEMINI_API_KEYS in .env"
         )
-    genai.configure(api_key=key)
-    result = genai.embed_content(model=settings.EMBEDDING_MODEL, content=text)
-    return result["embedding"]
 
 
 def chunk_text(text: str, chunk_size: int = None, chunk_overlap: int = None) -> list[str]:
@@ -161,13 +155,7 @@ def query_similar(query: str, top_k: int = 5, where: Optional[dict] = None) -> l
 
 
 def generate_answer(question: str, context_chunks: list[dict]) -> dict:
-    key = _api_key()
-    if not key:
-        raise ValueError(
-            "Gemini API key not configured. "
-            "Set GEMINI_API_KEY in .env or export GOOGLE_API_KEY."
-        )
-    genai.configure(api_key=key)
+    client = get_gemini_client()
 
     sources = []
     context_parts = []
@@ -201,10 +189,9 @@ Question: {question}
 
 Answer:"""
 
-    model = genai.GenerativeModel(settings.GEMINI_CHAT_MODEL)
-    response = model.generate_content(prompt)
+    answer_text = client.generate_content(prompt)
 
     return {
-        "answer": response.text,
+        "answer": answer_text,
         "sources": sources,
     }

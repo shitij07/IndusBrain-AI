@@ -1,19 +1,12 @@
 import json
-import os
 import re
 from typing import Optional
 
-import google.generativeai as genai
-
 from app.config import get_settings
 from app.services.chroma_service import query_similar
+from app.services.gemini_client import get_gemini_client
 
 settings = get_settings()
-
-
-def _api_key() -> str:
-    key = settings.GEMINI_API_KEY or os.getenv("GOOGLE_API_KEY") or ""
-    return key
 
 RCA_PROMPT = """You are an industrial root cause analysis expert. Given an incident description and relevant context from maintenance documents, perform a thorough RCA.
 
@@ -59,13 +52,7 @@ def perform_rca(incident_description: str, user_id: Optional[int] = None) -> dic
             "confidence_score": 0.0,
         }
 
-    key = _api_key()
-    if not key:
-        raise ValueError(
-            "Gemini API key not configured. "
-            "Set GEMINI_API_KEY in .env or export GOOGLE_API_KEY."
-        )
-    genai.configure(api_key=key)
+    client = get_gemini_client()
 
     where_clause = {"user_id": user_id} if user_id else None
     try:
@@ -90,10 +77,7 @@ def perform_rca(incident_description: str, user_id: Optional[int] = None) -> dic
         context=context_text,
     )
 
-    model = genai.GenerativeModel(settings.GEMINI_CHAT_MODEL)
-    response = model.generate_content(prompt)
-
-    raw = response.text.strip()
+    raw = client.generate_content(prompt)
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
 

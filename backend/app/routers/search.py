@@ -1,7 +1,6 @@
 import os
 import time
 import hashlib
-import google.generativeai as genai
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -10,6 +9,7 @@ from app.models.user import User
 from app.models.document import Document
 from app.models.entity import ExtractedEntity
 from app.services.graph_service import _get_driver
+from app.services.gemini_client import get_gemini_client
 from app.config import get_settings
 
 router = APIRouter(prefix="/search", tags=["search"])
@@ -18,11 +18,6 @@ settings = get_settings()
 _cache: dict[str, dict] = {}
 _last_call: float = 0
 _MIN_INTERVAL = 5.0
-
-
-def _api_key() -> str:
-    key = settings.GEMINI_API_KEY or os.getenv("GOOGLE_API_KEY") or ""
-    return key
 
 
 def _search_documents(query: str, db) -> list[dict]:
@@ -224,8 +219,10 @@ def _get_snippet(text: str | None, query: str, context_chars: int = 150) -> str:
 
 
 def _generate_ai_summary(query: str, results: dict) -> str | None:
-    key = _api_key()
-    if not key:
+    client = get_gemini_client()
+    try:
+        _ = client.key_manager.is_configured()
+    except RuntimeError:
         return None
 
     total_count = sum(len(v) for v in results.values())
@@ -244,8 +241,6 @@ def _generate_ai_summary(query: str, results: dict) -> str | None:
         return cached["summary"]
 
     try:
-        genai.configure(api_key=_api_key())
-
         parts = []
         for category, items in results.items():
             if items:
@@ -258,9 +253,7 @@ def _generate_ai_summary(query: str, results: dict) -> str | None:
 Results: {summary_text}
 
 Summarize in 1 sentence what was found."""
-        model = genai.GenerativeModel(settings.GEMINI_CHAT_MODEL)
-        response = model.generate_content(prompt)
-        ai_summary = response.text.strip()
+        ai_summary = client.generate_content(prompt)
     except Exception:
         ai_summary = None
 
